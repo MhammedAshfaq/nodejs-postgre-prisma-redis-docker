@@ -78,3 +78,14 @@
 ## Redis Setup
 
 13. npm i ioredis
+
+## performance monitoring
+14. npm install prom-client
+
+15. http://localhost:9090 promethuse URL
+
+16. http://localhost:3001 Grafana URL usernam = admin , password = admin
+
+## Application log
+
+17. npm install winston express-winston

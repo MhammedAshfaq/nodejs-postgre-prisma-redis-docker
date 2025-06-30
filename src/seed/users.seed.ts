@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import logger from "../logger/logger";
 
 export async function seedUsers(prisma: PrismaClient) {
   const users = [
@@ -63,5 +64,5 @@ export async function seedUsers(prisma: PrismaClient) {
     await prisma.users.create({ data: user });
   }
 
-  console.log("✅ Multiple users seeded");
+  logger.info("✅ Multiple users seeded");
 }
