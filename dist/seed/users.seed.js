@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seedUsers = seedUsers;
+const logger_1 = __importDefault(require("../logger/logger"));
 function seedUsers(prisma) {
     return __awaiter(this, void 0, void 0, function* () {
         const users = [
@@ -72,6 +76,6 @@ function seedUsers(prisma) {
         for (const user of users) {
             yield prisma.users.create({ data: user });
         }
-        console.log("✅ Multiple users seeded");
+        logger_1.default.info("✅ Multiple users seeded");
     });
 }

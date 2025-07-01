@@ -7,6 +7,8 @@ import { getCache, setCache } from "./cache/cache.service";
 import client from "prom-client";
 import { requestLogger } from "./middleware/requestLogger";
 import logger from "./logger/logger";
+import helmet from "helmet";
+import cors from "cors";
 
 dotenv.config();
 
@@ -35,8 +37,17 @@ app.get("/metrics", async (_req, res) => {
 app.use(express.json());
 setupSwagger(app);
 app.use(rateLimit(60, 10));
-
 app.use(requestLogger);
+app.use(
+  helmet({
+    contentSecurityPolicy: process.env.NODE_ENV === "production",
+  })
+);
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  })
+);
 
 // Health check
 app.get("/", async (_, res) => {

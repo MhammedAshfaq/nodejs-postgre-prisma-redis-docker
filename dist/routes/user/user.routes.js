@@ -64,6 +64,8 @@ const userController = new user_controller_1.UserController();
  *                       format: date-time
  *       400:
  *         description: User not found or bad request
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -108,6 +110,8 @@ router.post("/create", userController.createUser);
  *                   example: true
  *       400:
  *         description: User not found or bad request
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -141,6 +145,8 @@ router.patch("/update/:id", userController.updateUser);
  *                   example: true
  *       400:
  *         description: User not found or bad request
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -214,6 +220,8 @@ router.delete("/delete/:id", userController.deleteUser);
  *                             format: date-time
  *       400:
  *         description: User not found
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -313,6 +321,8 @@ router.post("/get/:id", userController.getUser);
  *                   example: 5
  *       400:
  *         description: Bad request or user not found
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */

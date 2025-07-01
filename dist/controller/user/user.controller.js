@@ -23,6 +23,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const user_validation_1 = require("../../validation/user/user.validation");
 const user_service_1 = require("../../service/user/user.service");
+const key_helper_1 = require("../../cache/key.helper");
+const cache_service_1 = require("../../cache/cache.service");
+const email_queue_1 = require("../../background/queue/email/email.queue");
 const userService = new user_service_1.UserService();
 class UserController {
     constructor() {
@@ -33,11 +36,14 @@ class UserController {
                     return res.status(400).json({ error: error.details[0].message });
                 }
                 const newUser = yield userService.createUser(value);
+                console.log("newUser", newUser);
+                yield (0, email_queue_1.queueSendEmail)(newUser.email, 'Welcome to MyApp 🎉', `Hi ${newUser.name}, thank you for signing up!`);
                 return res
                     .status(201)
                     .json({ message: "User created", data: newUser, success: true });
             }
             catch (error) {
+                console.log("-----", error.message);
                 return res
                     .status(500)
                     .json({ error: "Internal server error", success: false });
@@ -50,6 +56,7 @@ class UserController {
                     return res.status(400).json({ error: error.details[0].message });
                 }
                 const userId = req.params.id;
+                const cacheKey = (0, key_helper_1.userCacheKey)(userId);
                 const userData = yield userService.getUser(userId);
                 if (!userData) {
                     return res
@@ -59,23 +66,24 @@ class UserController {
                 let updatedDate = Object.assign(userData, value);
                 const { Address, createdAt, updatedAt, id } = updatedDate, cleanData = __rest(updatedDate, ["Address", "createdAt", "updatedAt", "id"]);
                 const updateUser = yield userService.updateUser(userId, cleanData);
-                return res
-                    .status(201)
-                    .json({
+                yield (0, cache_service_1.deleteCache)(cacheKey);
+                return res.status(201).json({
                     message: "User updated successfully",
                     data: updateUser,
                     success: true,
                 });
             }
             catch (error) {
-                return res
-                    .status(500)
-                    .json({ error: error.message || "Internal server error", success: false });
+                return res.status(500).json({
+                    error: error.message || "Internal server error",
+                    success: false,
+                });
             }
         });
         this.deleteUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const userId = req.params.id;
+                const cacheKey = (0, key_helper_1.userCacheKey)(userId);
                 const userData = yield userService.getUser(userId);
                 if (!userData) {
                     return res
@@ -83,6 +91,7 @@ class UserController {
                         .json({ error: "User not fount", success: false });
                 }
                 yield userService.deleteUser(userId);
+                yield (0, cache_service_1.deleteCache)(cacheKey);
                 return res
                     .status(200)
                     .json({ message: "User data deleted successfully", success: true });
@@ -96,19 +105,31 @@ class UserController {
         this.getUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const userId = req.params.id;
-                const userData = yield userService.getUser(userId);
-                if (!userData) {
-                    return res
-                        .status(400)
-                        .json({ error: "User not fount", success: false });
+                const cacheKey = (0, key_helper_1.userCacheKey)(userId);
+                let cacheData = yield (0, cache_service_1.getCache)(cacheKey);
+                if (cacheData) {
+                    console.log('--- CACHE USER DATA ---');
+                    return res.status(200).json({
+                        message: "User data retrived successfully",
+                        data: cacheData,
+                        success: true,
+                    });
                 }
-                return res
-                    .status(200)
-                    .json({
-                    message: "User data retrived successfully",
-                    data: userData,
-                    success: true,
-                });
+                else {
+                    console.log("--- Data getting from DB ---");
+                    const userData = yield userService.getUser(userId);
+                    if (!userData) {
+                        return res
+                            .status(400)
+                            .json({ error: "User not fount", success: false });
+                    }
+                    yield (0, cache_service_1.setCache)(cacheKey, userData);
+                    return res.status(200).json({
+                        message: "User data retrived successfully",
+                        data: userData,
+                        success: true,
+                    });
+                }
             }
             catch (error) {
                 return res
@@ -132,9 +153,7 @@ class UserController {
                         .status(400)
                         .json({ error: "User not fount", success: false });
                 }
-                return res
-                    .status(200)
-                    .json({
+                return res.status(200).json({
                     message: "User data retrived successfully",
                     data: result,
                     success: true,

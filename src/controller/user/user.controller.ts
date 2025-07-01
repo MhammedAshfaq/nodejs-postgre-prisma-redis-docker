@@ -7,6 +7,7 @@ import {
 import { UserService } from "../../service/user/user.service";
 import { userCacheKey } from "../../cache/key.helper";
 import { deleteCache, getCache, setCache } from "../../cache/cache.service";
+import { queueSendEmail } from "../../background/queue/email/email.queue";
 
 const userService = new UserService();
 export class UserController {
@@ -17,10 +18,16 @@ export class UserController {
         return res.status(400).json({ error: error.details[0].message });
       }
       const newUser = await userService.createUser(value);
+      console.log("newUser",newUser)
+      await queueSendEmail(
+      newUser.email,
+      'Welcome to MyApp',
+      `Hi ${newUser.name}, thank you for signing up!`
+    );
       return res
         .status(201)
         .json({ message: "User created", data: newUser, success: true });
-    } catch (error) {
+    } catch (error: any) {
       return res
         .status(500)
         .json({ error: "Internal server error", success: false });

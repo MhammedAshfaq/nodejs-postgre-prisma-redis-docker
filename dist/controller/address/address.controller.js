@@ -61,9 +61,7 @@ class AddressController {
                 let updatedDate = Object.assign(userAddressData, value);
                 const { user, createdAt, updatedAt, id } = updatedDate, cleanData = __rest(updatedDate, ["user", "createdAt", "updatedAt", "id"]);
                 const updateUserAddress = yield userAddressService.updateUserAddress(addressId, cleanData);
-                return res
-                    .status(201)
-                    .json({
+                return res.status(201).json({
                     message: "User address updated successfully",
                     data: updateUserAddress,
                     success: true,
@@ -80,7 +78,7 @@ class AddressController {
         this.deleteUserAddress = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const addressId = req.params.id;
-                const userAddressData = yield userAddressService.getUserAddress(addressId);
+                const userAddressData = yield userAddressService.getAddressById(addressId);
                 if (!userAddressData) {
                     return res
                         .status(400)
@@ -100,9 +98,10 @@ class AddressController {
         // Get User Address
         this.getUserAddress = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const addressId = req.params.id;
-                const userAddressData = yield userAddressService.getUserAddress(addressId);
-                if (!userAddressData) {
+                const userId = req.params.id;
+                const userAddressData = yield userAddressService.getUserAddress(userId);
+                console.log("--userAddressData", userAddressData);
+                if (!userAddressData || userAddressData.length === 0) {
                     return res
                         .status(400)
                         .json({ error: "User address not fount", success: false });

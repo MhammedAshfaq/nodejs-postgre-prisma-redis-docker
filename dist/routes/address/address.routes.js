@@ -78,6 +78,8 @@ const addressController = new address_controller_1.AddressController();
  *                     updatedAt:
  *                       type: string
  *                       format: date-time
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -151,6 +153,8 @@ router.post("/create", addressController.createUserAddress);
  *                       format: date-time
  *       400:
  *         description: User address not found or bad request
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -184,6 +188,8 @@ router.patch("/update/:id", addressController.updateUserAddress);
  *                   example: true
  *       400:
  *         description: User address not found or bad request
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */
@@ -255,6 +261,8 @@ router.delete("/delete/:id", addressController.deleteUserAddress);
  *                             format: date-time
  *       400:
  *         description: User not found
+ *       429:
+ *         description: Too many requests. Try again later.
  *       500:
  *         description: Internal server error
  */

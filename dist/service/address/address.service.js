@@ -35,10 +35,17 @@ class UserAddressService {
             });
         });
     }
-    getUserAddress(id) {
+    getAddressById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return prisma_1.default.address.findUnique({
                 where: { id },
+            });
+        });
+    }
+    getUserAddress(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return prisma_1.default.address.findMany({
+                where: { userId: userId },
                 include: {
                     user: {
                         select: {

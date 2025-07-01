@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const users_seed_1 = require("./users.seed");
-const prisma = new prisma_1.PrismaClient();
+const prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, users_seed_1.seedUsers)(prisma);
