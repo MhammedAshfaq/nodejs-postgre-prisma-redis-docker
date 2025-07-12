@@ -89,3 +89,11 @@
 ## Application log
 
 17. npm install winston express-winston
+
+
+<!--  CI/CD -->
+1. create instance
+2. run connection commads to login linux server
+3. create folder on server
+    -> mkdir cicd-node
+4. touch Dockerfile
